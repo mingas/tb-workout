@@ -399,8 +399,8 @@ function restoreLast(){
   var ua=navigator.userAgent||'';var ios=/iPhone|iPad|iPod/i.test(ua);var android=/Android/i.test(ua);
   if(!ios&&!android)return;
   el.innerHTML=ios
-    ?'<b>&#128241; Add this to your Home Screen:</b> tap the <b>Share</b> icon, then <b>Add to Home Screen</b>. It opens like an app and remembers your last plan.'
-    :'<b>&#128241; Add this to your Home Screen:</b> open the browser menu <b>&#8942;</b>, then <b>Add to Home screen</b>. It opens like an app and remembers your last plan.';
+    ?'<b>&#128241; Add this page to your Home Screen</b> for quick access: tap the <b>Share</b> icon, then <b>Add to Home Screen</b>. It remembers your last plan.'
+    :'<b>&#128241; Add this page to your Home Screen</b> for quick access: open the browser menu <b>&#8942;</b>, then <b>Add to Home screen</b>. It remembers your last plan.';
   el.style.display='block';
 }catch(e){}})();
 

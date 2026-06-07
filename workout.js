@@ -87,14 +87,18 @@
 @keyframes rise{to{opacity:1;transform:none}}
 #tbw .restore{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:16px;font-size:14px;display:none;align-items:center;justify-content:space-between;gap:10px}
 #tbw .restore button{border:0;background:var(--accent);color:#fff;border-radius:30px;padding:9px 16px;font-weight:700;cursor:pointer;font-family:"Mulish";font-size:13px}
-@media print{#tbw .form, #tbw .sexbar, #tbw .btns, #tbw .swap, #tbw .restore, #tbw .gen{display:none!important}
+#tbw .a2h{display:none;margin-top:18px;background:var(--soft);border:1px dashed var(--accent2);border-radius:12px;padding:12px 16px;font-size:13.5px;color:var(--ink);line-height:1.55}
+#tbw .a2h b{color:var(--accent)}
+@media print{#tbw, #tbw *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+#tbw .form, #tbw .sexbar, #tbw .btns, #tbw .swap, #tbw .restore, #tbw .gen, #tbw .a2h{display:none!important}
 #tbw .shot:hover .fig.end{opacity:0}
+#tbw .badge{display:none!important}
 #tbw{background:#fff}
-#tbw .card, #tbw .day{box-shadow:none;break-inside:avoid}
-#tbw .cta{background:#fff;color:#000;border:1px solid #ccc}
-#tbw .cta p{color:#444}}`;document.head.appendChild(st);
+#tbw .card, #tbw .day, #tbw .ex, #tbw details.block{box-shadow:none;break-inside:avoid}}`;document.head.appendChild(st);
+  ['apple-mobile-web-app-capable','mobile-web-app-capable'].forEach(function(n){var m=document.createElement('meta');m.setAttribute('name',n);m.setAttribute('content','yes');document.head.appendChild(m);});
+  var __mt=document.createElement('meta');__mt.setAttribute('name','apple-mobile-web-app-title');__mt.setAttribute('content','Workouts');document.head.appendChild(__mt);
   var mount=document.getElementById('tbw-mount')||document.body;
-  mount.innerHTML='<div id="tbw" data-sex="m">'+'<div class="wrap">\n  <div class="head">\n    <div class="eyebrow">Plain Hormones</div>\n    <h1 id="h1">Build a training plan that fits your hormones</h1>\n    <p id="sub">Answer a few questions and get a structured weekly program, built on recognised training science.</p>\n  </div>\n  <div class="sexbar">\n    <button id="bm" class="on" onclick="setSex(\'m\')">&#9794;&nbsp; Men</button>\n    <button id="bf" onclick="setSex(\'f\')">&#9792;&nbsp; Women</button>\n  </div>\n\n  <div id="restore" class="restore">\n    <span>Welcome back &mdash; want your last program?</span>\n    <button onclick="restoreLast()">Show last plan</button>\n  </div>\n\n  <div class="card form">\n    <div class="grid">\n      <div class="field"><label>Days per week</label><div class="opts" id="days"></div></div>\n      <div class="field"><label>Experience</label><div class="opts" id="exp"></div></div>\n      <div class="field"><label>Main goal</label><div class="opts" id="goal"></div></div>\n      <div class="field"><label>Equipment</label><div class="opts" id="equip"></div></div>\n      <div class="field femonly" style="grid-column:1/-1"><label>Life stage</label><div class="opts" id="stage"></div></div>\n    </div>\n    <button class="gen" onclick="generate(true)">Generate my program <span class="a2">&rarr;</span></button>\n  </div>\n\n  <div class="out" id="out"></div>\n</div>'+'</div>';
+  mount.innerHTML='<div id="tbw" data-sex="m">'+'<div class="wrap">\n  <div class="head">\n    <div class="eyebrow">Plain Hormones</div>\n    <h1 id="h1">Build a training plan that fits your hormones</h1>\n    <p id="sub">Answer a few questions and get a structured weekly program, built on recognised training science.</p>\n  </div>\n  <div class="sexbar">\n    <button id="bm" class="on" onclick="setSex(\'m\')">&#9794;&nbsp; Men</button>\n    <button id="bf" onclick="setSex(\'f\')">&#9792;&nbsp; Women</button>\n  </div>\n\n  <div id="restore" class="restore">\n    <span>Welcome back &mdash; want your last program?</span>\n    <button onclick="restoreLast()">Show last plan</button>\n  </div>\n\n  <div class="card form">\n    <div class="grid">\n      <div class="field"><label>Days per week</label><div class="opts" id="days"></div></div>\n      <div class="field"><label>Experience</label><div class="opts" id="exp"></div></div>\n      <div class="field"><label>Main goal</label><div class="opts" id="goal"></div></div>\n      <div class="field"><label>Equipment</label><div class="opts" id="equip"></div></div>\n      <div class="field femonly" style="grid-column:1/-1"><label>Life stage</label><div class="opts" id="stage"></div></div>\n    </div>\n    <button class="gen" onclick="generate(true)">Generate my program <span class="a2">&rarr;</span></button>\n  </div>\n\n  <div class="out" id="out"></div>\n  <div id="a2h" class="a2h"></div>\n</div>'+'</div>';
 
 const IMG='https://cdn.jsdelivr.net/gh/lczarnec/everkinetic_modifications@master/images/';
 const KEY='tb_workout_last_v1';
@@ -277,8 +281,8 @@ function shot(e){
       <div class="fig end" style="-webkit-mask-image:url('${u2}');mask-image:url('${u2}')"></div><span class="badge"></span></div>`;}
   return `<div class="ph"><span class="ico">&#127947;</span><span class="t">ILLUSTRATION<br>COMING SOON</span></div>`;
 }
-function exRow(e,sr){
-  return `<div class="ex">${shot(e)}
+function exRow(e,sr,di,xi){
+  return `<div class="ex" data-d="${di}" data-i="${xi}">${shot(e)}
     <div><div class="exname">${e.name}</div><div class="exmeta">${e.mus}</div>
     <div class="exinstr">${e.instr}</div>
     <button class="swap" onclick="swap(this,'${e.pat}')">&#8634; swap exercise</button></div>
@@ -302,7 +306,7 @@ function render(model){
   // Days
   model.forEach((d,i)=>{
     html+=`<div class="card day reveal" style="animation-delay:${i*60}ms"><div class="dtop"><h3>Day ${i+1} &mdash; ${d.dname}</h3><span class="tag">${d.ex.length+(d.cond?1:0)} exercises</span></div>`;
-    d.ex.forEach(e=>html+=exRow(e,sr));
+    d.ex.forEach((e,j)=>html+=exRow(e,sr,i,j));
     if(d.cond)html+=`<div class="ex"><div class="ph"><span class="ico">&#128692;</span><span class="t">CONDITIONING</span></div>
       <div><div class="exname">Conditioning Finisher</div><div class="exmeta">Heart, full body</div>
       <div class="exinstr">8\u201312 min of intervals \u2014 bike, row, brisk incline walk or a circuit. Hard but controlled.</div></div>
@@ -324,7 +328,7 @@ function render(model){
   html+=`<div class="cta reveal"><div class="eyebrow" style="color:var(--accent2)">Next step</div>
     <h3>${S.sex==='m'?'Make sure your hormones aren\u2019t holding you back':'Know what\u2019s happening with your hormones'}</h3>
     <p>${S.sex==='m'?'Training hard but still flat, tired or stalling? Take the free testosterone symptom check, or see which blood tests to ask for.':'Take the free hormone quiz, or see which blood tests are worth asking for in perimenopause and menopause.'}</p>
-    <a class="pill" href="#">&rarr; Free check &middot; no email needed</a></div>
+    <a class="pill" href="${S.sex==='m'?'/testosterone-test':'/hormone-quiz'}">&rarr; Free check &middot; no email needed</a></div>
     <div class="disc">Exercise illustrations: Everkinetic, CC-BY-SA 3.0 (recoloured). General guidance built on recognised training principles (ACSM / NSCA / peer-reviewed research) \u2014 not medical or individual advice. Check with a professional before starting if you have injuries or health conditions.</div>`;
 
   out.innerHTML=html;out.style.display='block';
@@ -342,19 +346,23 @@ function progText(){
 }
 
 let CURRENT=null;
+function saveState(){try{localStorage.setItem(KEY,JSON.stringify({S:{...S},model:CURRENT,t:Date.now()}));}catch(e){}}
 function generate(save){
   CURRENT=buildPlan();
   render(CURRENT);
-  if(save){try{localStorage.setItem(KEY,JSON.stringify({S:{...S},t:Date.now()}));}catch(e){}}
+  if(save)saveState();
   document.getElementById('out').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function swap(btn,pat){
-  const exEl=btn.closest('.ex');const day=exEl.parentElement;
+  const exEl=btn.closest('.ex');const day=exEl.closest('.day');
+  const di=+exEl.dataset.d, xi=+exEl.dataset.i;
   const used=new Set([...day.querySelectorAll('.exname')].map(n=>n.textContent));
   let p=poolFor(pat).filter(e=>!used.has(e.name));if(!p.length)p=poolFor(pat);
   const e=p[Math.floor(Math.random()*p.length)];if(!e)return;
   const sr=setsReps();
-  exEl.outerHTML=exRow(e,sr);
+  if(CURRENT&&CURRENT[di])CURRENT[di].ex[xi]=e;
+  exEl.outerHTML=exRow(e,sr,di,xi);
+  saveState();
 }
 function restoreLast(){
   try{const d=JSON.parse(localStorage.getItem(KEY));if(!d)return;
@@ -362,10 +370,27 @@ function restoreLast(){
     document.getElementById('bm').classList.toggle('on',S.sex==='m');
     document.getElementById('bf').classList.toggle('on',S.sex==='f');
     setSex(S.sex);['days','exp','goal','equip','stage'].forEach(k=>chips(k,k));
-    generate(false);document.getElementById('restore').style.display='none';
+    if(d.model){CURRENT=d.model;render(CURRENT);}else{generate(false);}
+    document.getElementById('out').scrollIntoView({behavior:'smooth',block:'start'});
+    document.getElementById('restore').style.display='none';
   }catch(e){}
 }
 // On load: offer to restore last plan (works when opened as a real file in your browser)
 (function(){try{if(localStorage.getItem(KEY))document.getElementById('restore').style.display='flex';}catch(e){}})();
+
+// Add-to-Home-Screen hint (mobile only; hidden once installed/standalone)
+(function(){try{var el=document.getElementById('a2h');if(!el)return;
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+  if(standalone)return;
+  var ua=navigator.userAgent||'';var ios=/iPhone|iPad|iPod/i.test(ua);var android=/Android/i.test(ua);
+  if(!ios&&!android)return;
+  el.innerHTML=ios
+    ?'<b>&#128241; Add this to your Home Screen:</b> tap the <b>Share</b> icon, then <b>Add to Home Screen</b>. It opens like an app and remembers your last plan.'
+    :'<b>&#128241; Add this to your Home Screen:</b> open the browser menu <b>&#8942;</b>, then <b>Add to Home screen</b>. It opens like an app and remembers your last plan.';
+  el.style.display='block';
+}catch(e){}})();
+
+// Expose handlers used by inline onclick (script runs inside an IIFE)
+window.setSex=setSex;window.generate=generate;window.swap=swap;window.restoreLast=restoreLast;
 
 })();

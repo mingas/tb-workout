@@ -89,26 +89,30 @@
 #tbw .restore button{border:0;background:var(--accent);color:#fff;border-radius:30px;padding:9px 16px;font-weight:700;cursor:pointer;font-family:"Mulish";font-size:13px}
 #tbw .a2h{display:none;margin-top:18px;background:var(--soft);border:1px dashed var(--accent2);border-radius:12px;padding:12px 16px;font-size:13.5px;color:var(--ink);line-height:1.55}
 #tbw .a2h b{color:var(--accent)}
+#tbw .figp{display:none}
 @media print{#tbw, #tbw *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 #tbw .form, #tbw .sexbar, #tbw .btns, #tbw .swap, #tbw .restore, #tbw .gen, #tbw .a2h{display:none!important}
 #tbw .shot:hover .fig.end{opacity:0}
 #tbw .badge{display:none!important}
 #tbw{background:#fff}
-#tbw .card, #tbw .day, #tbw .ex, #tbw details.block{box-shadow:none;break-inside:avoid}}`;document.head.appendChild(st);
+#tbw .card, #tbw .day, #tbw .ex, #tbw details.block{box-shadow:none;break-inside:avoid}
+#tbw .fig{display:none!important}
+#tbw .figp{display:block!important;position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);object-fit:contain}}`;document.head.appendChild(st);
   ['apple-mobile-web-app-capable','mobile-web-app-capable'].forEach(function(n){var m=document.createElement('meta');m.setAttribute('name',n);m.setAttribute('content','yes');document.head.appendChild(m);});
   var __mt=document.createElement('meta');__mt.setAttribute('name','apple-mobile-web-app-title');__mt.setAttribute('content','Workouts');document.head.appendChild(__mt);
+  try{var __wu=location.origin+'/workout-generator';var __MAN={name:'Workout Generator',short_name:'Workouts',description:'Build a hormone-aware weekly training program.',id:__wu,start_url:__wu,scope:__wu,display:'standalone',background_color:'#FBF6F1',theme_color:'#1C2F5E',icons:[{src:'https://cdn.jsdelivr.net/gh/mingas/tb-workout@main/icon_192.png',sizes:'192x192',type:'image/png'},{src:'https://cdn.jsdelivr.net/gh/mingas/tb-workout@main/icon_512.png',sizes:'512x512',type:'image/png'},{src:'https://cdn.jsdelivr.net/gh/mingas/tb-workout@main/icon_maskable_512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};var __oldm=document.querySelector('link[rel="manifest"]');if(__oldm&&__oldm.parentNode)__oldm.parentNode.removeChild(__oldm);var __mb=new Blob([JSON.stringify(__MAN)],{type:'application/manifest+json'});var __ml=document.createElement('link');__ml.rel='manifest';__ml.href=URL.createObjectURL(__mb);document.head.appendChild(__ml);}catch(e){}
   var mount=document.getElementById('tbw-mount')||document.body;
   mount.innerHTML='<div id="tbw" data-sex="m">'+'<div class="wrap">\n  <div class="head">\n    <div class="eyebrow">Plain Hormones</div>\n    <h1 id="h1">Build a training plan that fits your hormones</h1>\n    <p id="sub">Answer a few questions and get a structured weekly program, built on recognised training science.</p>\n  </div>\n  <div class="sexbar">\n    <button id="bm" class="on" onclick="setSex(\'m\')">&#9794;&nbsp; Men</button>\n    <button id="bf" onclick="setSex(\'f\')">&#9792;&nbsp; Women</button>\n  </div>\n\n  <div id="restore" class="restore">\n    <span>Welcome back &mdash; want your last program?</span>\n    <button onclick="restoreLast()">Show last plan</button>\n  </div>\n\n  <div class="card form">\n    <div class="grid">\n      <div class="field"><label>Days per week</label><div class="opts" id="days"></div></div>\n      <div class="field"><label>Experience</label><div class="opts" id="exp"></div></div>\n      <div class="field"><label>Main goal</label><div class="opts" id="goal"></div></div>\n      <div class="field"><label>Equipment</label><div class="opts" id="equip"></div></div>\n      <div class="field femonly" style="grid-column:1/-1"><label>Life stage</label><div class="opts" id="stage"></div></div>\n    </div>\n    <button class="gen" onclick="generate(true)">Generate my program <span class="a2">&rarr;</span></button>\n  </div>\n\n  <div class="out" id="out"></div>\n  <div id="a2h" class="a2h"></div>\n</div>'+'</div>';
 
 const IMG='https://cdn.jsdelivr.net/gh/lczarnec/everkinetic_modifications@master/images/';
 const KEY='tb_workout_last_v1';
-const S={sex:'m',days:'3',exp:'beg',goal:'muscle',equip:'gym',stage:'peri'};
+const S={sex:'m',days:'3',exp:'beg',goal:'muscle',equip:'gym',stage:'cycle'};
 const CFG={
   days:[['3','3 days'],['4','4 days'],['5','5 days'],['6','6 days']],
   exp:[['beg','Beginner'],['int','Intermediate'],['adv','Advanced']],
   goal:[['strength','Strength'],['muscle','Build muscle'],['fatloss','Fat loss'],['general','General fitness']],
   equip:[['gym','Full gym'],['home','Home (dumbbells)'],['min','Minimal / bodyweight']],
-  stage:[['peri','Perimenopause'],['meno','Menopause'],['post','Post-menopause']]
+  stage:[['cycle','Regular periods'],['peri','Perimenopause'],['meno','Menopause'],['post','Post-menopause']]
 };
 const LBL={beg:'Beginner',int:'Intermediate',adv:'Advanced',strength:'Strength',muscle:'Build muscle',fatloss:'Fat loss',general:'General fitness'};
 
@@ -210,6 +214,10 @@ const EX=[
  e('Hanging / Bench Leg Raise','core','Lower abs',['gym','home'],1,'flat_bench_leg_raises','Lift the legs with control while keeping the lower back flat, then lower slowly.'),
  e('Ab Wheel Rollout','core','Core',['gym','home'],2,'ab_rollout_on_knees_with_barbell','From the knees, roll out keeping the core braced and back flat, then pull back in. Advanced \u2014 stay controlled.'),
  e('Cable Crunch','core','Abs',['gym'],1,'seated_ab_crunch_with_cable','Kneeling, crunch down against the cable by flexing the abs, then return slowly.'),
+ e('Bodyweight Squat','squat','Quads, glutes',['home','min'],1,null,'<b>Setup:</b> Stand tall, feet shoulder-width, arms out in front for balance. <b>Movement:</b> Sit the hips down and back until the thighs reach about parallel, chest up and heels down, then drive up. <b>Cue:</b> Push the knees out slightly and keep the weight in the mid-foot. Add a slow 3-second lower or a pause at the bottom to make it harder \u2014 no equipment needed.'),
+ e('Pike Push-up','pushV','Shoulders, triceps',['home','min'],1,null,'<b>Setup:</b> From a push-up position, walk the feet in and lift the hips so the body forms an upside-down V, head pointing down. <b>Movement:</b> Bend the elbows to lower the crown of the head toward the floor, then press back up. <b>Cue:</b> The more vertical the torso, the more it trains the shoulders. A scalable, equipment-free overhead press.'),
+ e('Doorway / Towel Row','pullH','Back, biceps',['min'],1,null,'<b>Setup:</b> Loop a sturdy towel around a fixed pole or the latch-side edge of a securely closed door; hold both ends, lean back with straight arms, feet close to the base. <b>Movement:</b> Pull the chest toward your hands, driving the elbows back and squeezing the shoulder blades, then lower slowly. <b>Cue:</b> The more horizontal the body, the harder it is \u2014 a no-equipment way to train the back.'),
+ e('Dumbbell Pullover','pullV','Lats, chest',['home','gym'],1,'straight_arm_dumbbell_pullover','<b>Setup:</b> Lie back on a bench holding one dumbbell over the chest with both hands. <b>Movement:</b> With a slight bend in the elbows, lower the weight back behind the head until you feel a stretch through the lats, then pull it back over the chest. <b>Cue:</b> Move from the shoulders, not the elbows \u2014 a great lat builder when you have no pull-up bar.'),
 ];
 
 /* ============ SPLITS ============ */
@@ -278,7 +286,7 @@ function buildPlan(){
 function shot(e){
   if(e.evk){const u1=IMG+e.evk+'_1.png',u2=IMG+e.evk+'_2.png';
     return `<div class="shot"><div class="fig" style="-webkit-mask-image:url('${u1}');mask-image:url('${u1}')"></div>
-      <div class="fig end" style="-webkit-mask-image:url('${u2}');mask-image:url('${u2}')"></div><span class="badge"></span></div>`;}
+      <div class="fig end" style="-webkit-mask-image:url('${u2}');mask-image:url('${u2}')"></div><img class="figp" src="${u1}" alt="${e.name}"><span class="badge"></span></div>`;}
   return `<div class="ph"><span class="ico">&#127947;</span><span class="t">ILLUSTRATION<br>COMING SOON</span></div>`;
 }
 function exRow(e,sr,di,xi){
@@ -335,6 +343,7 @@ function render(model){
 }
 function noteText(){
   if(S.sex==='m')return `<b>Why this plan:</b> compound lifts drive the biggest hormonal response, but recovery is where testosterone is protected \u2014 more sessions isn\u2019t always better. This balances hard training and rest for <b>${LBL[S.goal].toLowerCase()}</b>, with each major muscle trained about twice a week.`;
+  if(S.stage==='cycle')return `<b>Why this plan:</b> with <b>regular cycles</b>, resistance training is the best investment you can make \u2014 it builds the muscle, strength and bone density that protect you for decades and supports steady energy across your cycle. This focuses on progressive strength work with strong hips and glutes.`;
   const stage={peri:'perimenopause',meno:'menopause',post:'post-menopause'}[S.stage];
   return `<b>Why this plan:</b> through <b>${stage}</b>, falling oestrogen makes it harder to hold muscle and bone. Strength training is the strongest lever you have \u2014 so this prioritises resistance work, hip and glute strength, and recovery, not endless cardio.`;
 }

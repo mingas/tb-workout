@@ -101,6 +101,8 @@
 #tbw .ex{break-inside:avoid!important;page-break-inside:avoid!important}
 #tbw details.block,#tbw .cta,#tbw .note{break-inside:avoid!important;page-break-inside:avoid!important}
 #tbw details.block .inner{display:block!important}
+#tbw .reveal{opacity:1!important;transform:none!important;animation:none!important}
+#tbw .shot{aspect-ratio:auto!important;height:128px}
 #tbw .fig{display:none!important}
 #tbw .figp{display:block!important;position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);object-fit:contain}}`;document.head.appendChild(st);
   ['apple-mobile-web-app-capable','mobile-web-app-capable'].forEach(function(n){var m=document.createElement('meta');m.setAttribute('name',n);m.setAttribute('content','yes');document.head.appendChild(m);});

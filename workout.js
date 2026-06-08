@@ -276,7 +276,7 @@ function render(model){
   let html=`<div class="note reveal">${noteText()}</div>
   <div class="planhead"><h2>Your weekly program</h2>
   <span class="summary">${S.sex==='m'?'Men':'Women'} &middot; ${S.days} days/week &middot; ${LBL[S.exp]} &middot; ${LBL[S.goal]}</span></div>
-  <div class="btns"><button onclick="generate(true)">&#8635; Regenerate plan</button><button onclick="window.print()">&#8681; Save as PDF</button></div>`;
+  <div class="btns"><button onclick="generate(true)">&#8635; Regenerate plan</button><button onclick="printPlan()">&#8681; Save as PDF</button></div>`;
 
   // Warm-up (collapsible; open for beginners, closed for advanced)
   const wOpen=S.exp!=='adv';
@@ -385,6 +385,68 @@ function restoreLast(){
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLB();});
 })();
 
-window.setSex=setSex;window.generate=generate;window.swap=swap;window.restoreLast=restoreLast;
+
+function printPlan(){
+  if(!CURRENT){return;}
+  var sex=S.sex;
+  var accent = sex==='f' ? '#46243F' : '#1C2F5E';
+  var accent2= sex==='f' ? '#C0685C' : '#B8860B';
+  var soft   = sex==='f' ? '#F7E9E6' : '#eef1f7';
+  var planHTML = document.getElementById('out').innerHTML;
+  var css = ""
+   + "@page{margin:14mm 12mm}"
+   + "*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}"
+   + "body{margin:0;font-family:Georgia,'Times New Roman',serif;color:#1d1530;background:#fff;font-size:13px}"
+   + ".reveal{opacity:1!important;transform:none!important;animation:none!important}"
+   + ".out{display:block!important}"
+   + ".summary{font-size:12px;color:#6c6075;font-weight:700;margin:0 0 8px}"
+   + ".planhead{font-size:21px;color:"+accent+";margin:0 0 10px;font-family:Georgia,serif}"
+   + ".note{background:"+soft+";border-left:4px solid "+accent2+";border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.45;margin:0 0 12px;break-inside:avoid;page-break-inside:avoid}"
+   + ".note b{color:"+accent+"}"
+   + ".day{border:1px solid #e3d9d0;border-radius:10px;overflow:visible;margin:0 0 12px}"
+   + ".dtop{background:"+accent+";color:#fff;padding:10px 14px;font-weight:700;border-radius:9px 9px 0 0;display:flex;justify-content:space-between;align-items:center;break-after:avoid;page-break-after:avoid}"
+   + ".dtop .tag{font-size:10px;letter-spacing:1px;opacity:.85}"
+   + ".ex{display:flow-root;padding:11px 14px;border-bottom:1px solid #efe7e0;break-inside:avoid;page-break-inside:avoid}"
+   + ".ex:last-child{border-bottom:0}"
+   + ".shot,.ph{float:left;width:100px;height:114px;margin:0 13px 0 0;position:relative;border:1px solid #e3d9d0;border-radius:8px;overflow:hidden;background:#FBF6F1}"
+   + ".figp{display:block!important;position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);object-fit:contain}"
+   + ".fig,.ph0,.ph1,.badge,.eqbadge,.zoom{display:none!important}"
+   + ".ph{display:flex;align-items:center;justify-content:center;text-align:center;border:1px dashed #ccc}"
+   + ".ph .ico{display:none}.ph .t{font-size:9px;color:#aaa;font-weight:700;letter-spacing:.5px}"
+   + ".exname{font-weight:700;font-size:15px;color:#1d1530}"
+   + ".exmeta{font-size:10.5px;color:"+accent2+";font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin:2px 0 5px}"
+   + ".exinstr{font-size:12px;color:#555;line-height:1.45}"
+   + ".swap,.btns,.restore,.a2h,.gen,.form,.sexbar{display:none!important}"
+   + ".sets{float:right;width:78px;text-align:right;margin-left:8px}"
+   + ".sets .s{font-weight:700;font-size:18px;color:"+accent+"}"
+   + ".sets .r{font-size:11px;color:#6c6075}"
+   + "details.block{break-inside:avoid;page-break-inside:avoid;margin:8px 0;border:1px solid #e3d9d0;border-radius:8px;padding:8px 12px}"
+   + "details.block .inner{display:block!important}"
+   + "details.block summary{font-weight:700;color:"+accent+";list-style:none}"
+   + ".warmrow,.progtbl{font-size:12px}"
+   + ".cta{border:1px solid #ddd;border-radius:8px;padding:12px;margin-top:10px;break-inside:avoid;page-break-inside:avoid}"
+   + ".cta a{color:"+accent+"}";
+  var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Your Workout Plan</title><style>'+css+'</style></head><body><div class="out" style="display:block">'+planHTML+'</div></body></html>';
+  var win = window.open('', '_blank');
+  if(!win){ alert('Please allow pop-ups to save the PDF.'); return; }
+  win.document.open(); win.document.write(doc); win.document.close();
+  // open any <details> so warm-up/progression print
+  try{ var ds=win.document.querySelectorAll('details'); for(var i=0;i<ds.length;i++){ds[i].setAttribute('open','');} }catch(e){}
+  // wait for images, then print
+  function go(){ try{ win.focus(); win.print(); }catch(e){} }
+  var imgs = win.document.images, left = imgs.length, done=false;
+  function fire(){ if(done)return; done=true; setTimeout(go,150); }
+  if(left===0){ fire(); }
+  else {
+    var t=setTimeout(fire, 2500);
+    for(var j=0;j<imgs.length;j++){
+      if(imgs[j].complete){ if(--left<=0){clearTimeout(t);fire();} }
+      else { imgs[j].addEventListener('load', function(){ if(--left<=0){clearTimeout(t);fire();} });
+             imgs[j].addEventListener('error', function(){ if(--left<=0){clearTimeout(t);fire();} }); }
+    }
+  }
+}
+
+window.setSex=setSex;window.generate=generate;window.swap=swap;window.restoreLast=restoreLast;window.printPlan=printPlan;
 
 })();

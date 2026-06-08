@@ -232,10 +232,21 @@ function pick(pat,used){
   const f=poolFor(pat);return f[Math.floor(Math.random()*f.length)];
 }
 function setsReps(){
-  const base={strength:[4,'3\u20135 reps','2\u20135 min rest'],muscle:[3,'8\u201312 reps','60\u201390 s rest'],
-    fatloss:[3,'12\u201315 reps','30\u201360 s rest'],general:[3,'8\u201312 reps','60\u201390 s rest']}[S.goal];
-  let sets=base[0]+(S.exp==='adv'?1:0)-(S.exp==='beg'&&base[0]>3?1:0);
-  return {sets,reps:base[1],rest:base[2]};
+  const G={strength:[4,3,5],muscle:[3,8,12],fatloss:[3,12,15],general:[3,8,12]}[S.goal];
+  let sets=G[0], lo=G[1], hi=G[2];
+  if(S.exp==='adv')sets+=1;
+  if(S.exp==='beg'&&sets>3)sets-=1;
+  let rest = S.goal==='strength'?'2\u20135 min rest' : S.goal==='fatloss'?'30\u201360 s rest' : '60\u201390 s rest';
+  // Women life-stage modulation: more recovery as oestrogen declines; heavier/lower-rep bias for bone in meno/post
+  if(S.sex==='f'){
+    if(S.stage==='peri'){
+      rest = S.goal==='strength'?'2\u20135 min rest' : S.goal==='fatloss'?'45\u201375 s rest' : '75\u2013105 s rest';
+    } else if(S.stage==='meno'||S.stage==='post'){
+      if(S.goal!=='strength'){ lo=Math.max(5,lo-2); hi=Math.max(8,hi-2); }
+      rest = S.goal==='strength'?'2\u20135 min rest' : S.goal==='fatloss'?'60\u201390 s rest' : '90\u2013120 s rest';
+    }
+  }
+  return {sets:sets, reps:lo+'\u2013'+hi+' reps', rest:rest};
 }
 function warmups(dname){
   const lower=/Lower|Legs|Full/.test(dname), upper=/Upper|Push|Pull/.test(dname);
@@ -317,9 +328,10 @@ function render(model){
 }
 function noteText(){
   if(S.sex==='m')return `<b>Why this plan:</b> compound lifts drive the biggest hormonal response, but recovery is where testosterone is protected \u2014 more sessions isn\u2019t always better. This balances hard training and rest for <b>${LBL[S.goal].toLowerCase()}</b>, with each major muscle trained about twice a week.`;
-  if(S.stage==='cycle')return `<b>Why this plan:</b> with <b>regular cycles</b>, resistance training is the best investment you can make \u2014 it builds the muscle, strength and bone density that protect you for decades and supports steady energy across your cycle. This focuses on progressive strength work with strong hips and glutes.`;
-  const stage={peri:'perimenopause',meno:'menopause',post:'post-menopause'}[S.stage];
-  return `<b>Why this plan:</b> through <b>${stage}</b>, falling oestrogen makes it harder to hold muscle and bone. Strength training is the strongest lever you have \u2014 so this prioritises resistance work, hip and glute strength, and recovery, not endless cardio.`;
+  if(S.stage==='cycle')return `<b>Why this plan:</b> with <b>regular cycles</b>, resistance training is the best investment you can make \u2014 it builds the muscle, strength and bone density that protect you for decades and supports steady energy across your cycle. Standard rep ranges and rest for your goal, with strong hips and glutes.`;
+  if(S.stage==='peri')return `<b>Why this plan:</b> in <b>perimenopause</b>, hormones fluctuate and recovery gets harder. This keeps progressive strength work for your goal but builds in <b>longer rest</b> so you recover well \u2014 strength training protects the muscle and bone you\u2019ll rely on for decades.`;
+  const stage=S.stage==='meno'?'menopause':'post-menopause';
+  return `<b>Why this plan:</b> through <b>${stage}</b>, lower oestrogen speeds muscle and bone loss. So this leans toward <b>heavier, lower-rep strength work</b> for bone density, with <b>longer rest</b> for recovery \u2014 resistance training is your strongest lever, not endless cardio.`;
 }
 function progText(){
   return {strength:'Strength comes from lifting heavier over time. Keep reps low (3\u20135), rest fully, and add weight before reps.',
